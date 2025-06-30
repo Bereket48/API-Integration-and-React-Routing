@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./stylings/bootstrap.css" />
+    <title>Inserting data into a db</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 bg-light p-4 rounded shadow-sm">
+          <h2 class="row justify-content-center">Add a New Product</h2>
+          <form action="http://localhost:3001/addproducts" method="POST">
+            <!-- Product ID Field (Auto-generated) -->
+            <div class="mb-3">
+              <label for="product_id" class="form-label">Product ID</label>
+              <input
+                type="number"
+                class="form-control"
+                id="product_id"
+                name="Product_ID"
+                placeholder="(Auto-generated)"
+                readonly
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="product_url" class="form-label">Product URL</label>
+              <input
+                type="url"
+                class="form-control"
+                id="product_url"
+                name="Product_url"
+                placeholder="Enter Product URL"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="product_name" class="form-label">Product Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="product_name"
+                name="Product_name"
+                placeholder="Enter Product Name"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="product_description" class="form-label"
+                >Product Description</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="product_description"
+                name="Product_brief_description"
+                placeholder="Enter Brief Description"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="" class="form-label"
+                >Link destination</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="product_link"
+                name="Product_link"
+                placeholder="Enter Product Link"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="" class="form-label"
+                >Image</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="product_img"
+                name="Product_img"
+                placeholder="Enter Image Link"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="starting_price" class="form-label"
+                >Price</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="starting_price"
+                name="Starting_price"
+                placeholder="Enter Starting Price"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for=" " class="form-label">Monthly Plan</label>
+              <input
+                type="text"
+                class="form-control"
+                id="price_range"
+                name="Price_range"
+                placeholder="Enter Price Range"
+              />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Add Product</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS (Optional, for extra functionality like tooltips, popovers, etc.) -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz4fnFO9gybB4vfxzVd6j9D2oJvY6+2qMdy7qK9x8ttEFi1mLk8wBzY1pR"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+      integrity="sha384-pzjw8f+ua7Kw1TIq0x3I0ou+v+qBKmOOJfktn0vsFiLXM5iSmYQz90euk/dp6GgA"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- // npm i cors //              ----------// Installed
+const cors = require("cors");
+app.use(cors());
+const express = require("express");                                   
+let app = express();                                                 
+const port = 3001;                                                   
+app.listen(port, (err) => {                                          
+if (err) console.log(err.message);                                 
+else console.log(`Server running at http://localhost:${port}`);    
+});
+
+const mysql = require("mysql2");
+let myConnection = mysql.createConnection({
+  socketPath: "",
+  user: "myDBuser",
+  password: "123456",
+  host: "localhost",
+  database: "myDB",
+});
+myConnection.connect((err) => {
+  if (err) {
+    console.log(err.message);
+  } else {
+    console.log("Connected to DB!");
+  }
+});                              
+
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // To pass frontend data to the req body object when the client sends JSON data (e.g., from fetch, Postman, or an API client)
+app.use(express.urlencoded({ extended: true })); // To pass frontend data to the req body object when we are expecting URL-encoded data, like what comes from a standard HTML form submission (application/x-www-form-urlencoded content type).
+
+app.post("/addproducts", (req, res) => {
+  // console.log(req.body); // Just to see
+  const {
+    Product_url,
+    Product_name,
+    Product_brief_description,
+    Product_link,
+    Starting_price,
+    Price_range,
+  } = req.body; // Product_ID will be auto-assigned
+  // let Pr_url = req.body.Product_url
+  // let Pr_name = req.body.Product_url  // These are alternative syntaxes
+  const insertUrlAndName = `INSERT INTO Products(Product_url, Product_name) VALUES(?, ?)`;
+  const insertDescription = `INSERT INTO Product_Description(Product_ID, Product_brief_description, Product_link, Product_img) VALUES(?, ?, ?, ?)`;
+  const insertPrice = `INSERT INTO Product_Price(Product_ID, Starting_price, Price_range) VALUES(?, ?, ?)`;
+
+  myConnection.query(
+    insertUrlAndName,
+    [Product_url, Product_name],
+    (err, results, fields) => {
+      if (err) {
+        console.log(`Error Found: ${err}`);
+        return res.status(500).send("Something went wrong.");
+      }
+      const productId = results.insertId;
+      myConnection.query(
+        insertDescription,
+        [productId, Product_brief_description, Product_link, Product_img],
+        (err, results, fields) => {
+          if (err) {
+            console.log(`Error Found: ${err}`);
+            return res.status(500).send("Something went wrong.");
+          }
+          myConnection.query(
+            insertPrice,
+            [productId, Starting_price, Price_range],
+            (err, results, fields) => {
+              if (err) {
+                console.log(`Error Found: ${err}`);
+                return res.status(500).send("Something went wrong.");
+              }
+              res.send("Data inserted!");
+              console.log("Data inserted!");
+            }
+          );
+        }
+      );
+    }
+  );
+}); -->
